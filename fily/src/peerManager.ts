@@ -1,7 +1,7 @@
 import { Peer } from "peerjs";
 
-function createPeer(){
-    const peer = new Peer();
+function createPeer(id: string){
+    const peer = new Peer(id + "-filyPeer-VWdOKQrqGPEtCm7sdiWmZAbtK");
     peer.on('open', function(id) {
         console.log('My peer ID is: ' + id);
     });
@@ -17,7 +17,7 @@ function connectToPeer(id: string){
     
     // Ensure the peer is open before connecting.
     peer.on('open', () => {
-        const conn = peer.connect(id);
+        const conn = peer.connect(id + "-filyPeer-VWdOKQrqGPEtCm7sdiWmZAbtK");
         conn.on('open', function() {
             conn.on('data', function(data) {
                 console.log('Received', data);

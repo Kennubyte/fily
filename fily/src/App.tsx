@@ -43,9 +43,9 @@ export default function App() {
           fileName: file.name,
           fileSize: file.size
         })
-        setTimeout(() => {
-          saveArrayBuffer(sendableFile().data, sendableFile().fileName);
-        }, 5000);
+        const code = Math.random().toString().slice(2, 8);
+        setShareCode(code);
+        createPeer(code);
       };
     };
 
@@ -66,7 +66,10 @@ export default function App() {
       alert("Code must be 6 digits");
       return;
     }
-    
+
+    connectToPeer(code);
+
+    /*     
     console.log("Connecting to", code);
     const response = await fetch(`http://localhost:8080/api/getResourceByCode/${code}`);
     if (!response.ok) {
@@ -76,6 +79,9 @@ export default function App() {
 
     const responseInfo = await response.text();
     console.log(responseInfo)
+    */
+
+
   }
 
   return (
@@ -93,8 +99,6 @@ export default function App() {
             Select File
           </Button>
         </div>
-        <Button variant="contained" on:click={createPeer}>create peer</Button>
-        <Button variant="contained" on:click={() => connectToPeer("123456")}>connect to peer</Button>
       </div>
     </>
   );
