@@ -1,7 +1,7 @@
 import { Peer } from "peerjs";
 
 function createPeer(){
-    const peer = new Peer("123456");
+    const peer = new Peer();
     peer.on('open', function(id) {
         console.log('My peer ID is: ' + id);
     });
