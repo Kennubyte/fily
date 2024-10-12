@@ -3,25 +3,12 @@ import { TextField } from "@suid/material";
 import { createSignal } from "solid-js";
 
 import './peerManager'
-import { connectToPeer, createPeer } from "./peerManager";
+import { connectToPeer, createPeer, downloadableFileCallback } from "./peerManager";
 
 export default function App() {
   const [shareCode, setShareCode] = createSignal<string>("");
   const [sendableFile, setSendableFile] = createSignal<{ data: ArrayBuffer; fileName: string; fileSize: number }>();
-
-  function saveArrayBuffer(arrayBuffer: ArrayBuffer, filename: string) {
-    const blob = new Blob([arrayBuffer], { type: "application/octet-stream" });
-
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
+  downloadableFileCallback(sendableFile)
 
   function handleFile() {
     const input = document.createElement("input");
