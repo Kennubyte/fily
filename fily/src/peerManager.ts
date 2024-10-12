@@ -13,16 +13,24 @@ function createPeer(id: string){
 }
 
 function connectToPeer(id: string){
-    const peer = new Peer(); // Create a new peer without an ID.
+    const peer = new Peer();
     
-    // Ensure the peer is open before connecting.
     peer.on('open', () => {
         const conn = peer.connect(id + "-filyPeer-VWdOKQrqGPEtCm7sdiWmZAbtK");
         conn.on('open', function() {
+
             conn.on('data', function(data) {
                 console.log('Received', data);
             });
-            conn.send('Hello testing!');
+
+            conn.send({
+                type: 'requestFileData',
+            });
+
+            conn.send({
+                type: 'requestFile',
+            });
+
         });
     });
 }
