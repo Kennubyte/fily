@@ -9,6 +9,7 @@
   "dependencies": {
     "@suid/icons-material": "*",
     "@suid/material": "*",
+    "peerjs": "^1.5.4",
     "solid-js": "*"
   },
   "devDependencies": {

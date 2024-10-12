@@ -2,25 +2,25 @@ import Button from "@suid/material/Button";
 import { TextField } from "@suid/material";
 import { createSignal } from "solid-js";
 
+import './peerManager'
+import { connectToPeer, createPeer } from "./peerManager";
+
 export default function App() {
   const [shareCode, setShareCode] = createSignal<string>("");
   const [sendableFile, setSendableFile] = createSignal<{ data: ArrayBuffer; fileName: string; fileSize: number }>();
 
   function saveArrayBuffer(arrayBuffer: ArrayBuffer, filename: string) {
-    // Step 1: Create a Blob from the ArrayBuffer
     const blob = new Blob([arrayBuffer], { type: "application/octet-stream" });
 
-    // Step 2: Create a URL for the Blob
     const url = URL.createObjectURL(blob);
 
-    // Step 3: Create an anchor element and trigger the download
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
-    document.body.appendChild(a); // Append to body
-    a.click(); // Trigger the download
-    document.body.removeChild(a); // Clean up
-    URL.revokeObjectURL(url); // Free up memory
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }
 
   function handleFile() {
@@ -52,7 +52,7 @@ export default function App() {
     input.click();
   }
 
-  function handleConnect(e: Event) {
+  async function handleConnect(e: Event) {
     e.preventDefault();
     const data = new FormData(e.target as HTMLFormElement);
     const code = [...data.entries()][0][1] as unknown as string;
@@ -66,8 +66,16 @@ export default function App() {
       alert("Code must be 6 digits");
       return;
     }
-
+    
     console.log("Connecting to", code);
+    const response = await fetch(`http://localhost:8080/api/getResourceByCode/${code}`);
+    if (!response.ok) {
+      alert("Resource not found");
+      return;
+    }
+
+    const responseInfo = await response.text();
+    console.log(responseInfo)
   }
 
   return (
@@ -85,6 +93,8 @@ export default function App() {
             Select File
           </Button>
         </div>
+        <Button variant="contained" on:click={createPeer}>create peer</Button>
+        <Button variant="contained" on:click={() => connectToPeer("123456")}>connect to peer</Button>
       </div>
     </>
   );
