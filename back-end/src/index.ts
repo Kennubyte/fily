@@ -1,4 +1,5 @@
 import express from 'express';
+import client from './redisClient'
 
 const app = express();
 const port = 8080;
