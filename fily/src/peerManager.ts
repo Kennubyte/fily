@@ -7,11 +7,26 @@ function createPeer(id: string){
         console.log('My peer ID is: ' + id);
     });
     peer.on('connection', function(conn) {
-        conn.send(sendableFile().fileName);
-        conn.on('data', function(data) {
-            console.log(data);
+        conn.on('data', function(data: { type: string; message: any }) {
+            console.log(data); // Log the incoming data
+    
+            switch (data.type) {
+                case "requestFileData":
+                    conn.send({ type: "responseFileData", fileName: sendableFile().fileName, fileSize: sendableFile().fileSize });
+                    break;
+
+                case "requestFile":
+                    conn.send({ type: "responseFile", file: sendableFile().data });
+                    break;
+    
+                // Add more cases if needed
+                default:
+                    console.log('Unknown type:', data.type);
+                    break;
+            }
         });
     });
+    
 }
 
 function connectToPeer(id: string){
