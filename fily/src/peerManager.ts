@@ -1,27 +1,14 @@
 import { Peer } from "peerjs";
-import EventEmitter from './eventEmitter';
 let sendableFile
 let setFileDownloadProgress
 let setReceivingFile
 let peer: Peer;
-class MyEmitter extends EventEmitter {}
-const myEmitter = new MyEmitter();
-
 function createPeer(id: string){
     peer = new Peer(id + "-filyPeer-VWdOKQrqGPEtCm7sdiWmZAbtK");
     peer.on('open', function(id) {
         console.log('My peer ID is: ' + id);
     });
-    peer.on('connection', function(conn) {
-        myEmitter.on('kill', () => {
-            if (conn && conn.open) {
-                console.log("Killing stream");
-                conn.send({ type: "killStream" });
-                console.log(conn.open)
-            } else {
-                console.warn("Connection is not open or already closed, cannot send killStream");
-            }
-        });        
+    peer.on('connection', function(conn) {  
         
         conn.on('data', function(data: { type: string; message: any }) {
             console.log(data); // Log the incoming data
@@ -79,6 +66,11 @@ function connectToPeer(id: string){
     peer.on('open', () => {
         const conn = peer.connect(id + "-filyPeer-VWdOKQrqGPEtCm7sdiWmZAbtK");
         conn.on('open', function() {
+
+            conn.on('error', function(err) {
+                stopSharing()
+                alert("connection died");
+            });
             
             let fileData: Uint8Array | undefined; // Declare fileData with type
 
@@ -90,11 +82,6 @@ function connectToPeer(id: string){
                 offset: number; 
             }) {
                 switch (data.type) {
-                    
-                    case "killStream":
-                        console.log('Stream killed');
-                        fileData = undefined; // Reset fileData
-                        break;
 
                     case "responseFileData":
                         console.log('File Data:', data.fileName, data.fileSize);
@@ -158,7 +145,6 @@ function connectToPeer(id: string){
 
 function stopSharing(){
     // Stop sharing
-    myEmitter.emit('kill');
     peer.destroy();
     setReceivingFile(false);
 }
