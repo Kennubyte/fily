@@ -10,7 +10,8 @@
     "@suid/icons-material": "*",
     "@suid/material": "*",
     "peerjs": "^1.5.4",
-    "solid-js": "*"
+    "solid-js": "*",
+    "solid-toast": "^0.5.0"
   },
   "devDependencies": {
     "@suid/vite-plugin": "*",

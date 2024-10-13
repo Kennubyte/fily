@@ -1,13 +1,21 @@
 import { Peer } from "peerjs";
+import EventEmitter from './eventEmitter';
 let sendableFile
 let setFileDownloadProgress
+let setReceivingFile
+let peer: Peer;
+class MyEmitter extends EventEmitter {}
+const myEmitter = new MyEmitter();
 
 function createPeer(id: string){
-    const peer = new Peer(id + "-filyPeer-VWdOKQrqGPEtCm7sdiWmZAbtK");
+    peer = new Peer(id + "-filyPeer-VWdOKQrqGPEtCm7sdiWmZAbtK");
     peer.on('open', function(id) {
         console.log('My peer ID is: ' + id);
     });
     peer.on('connection', function(conn) {
+        myEmitter.on('kill', () => {
+            conn.send({ type: "killStream" });
+        });
         conn.on('data', function(data: { type: string; message: any }) {
             console.log(data); // Log the incoming data
     
@@ -59,7 +67,7 @@ function createPeer(id: string){
 }
 
 function connectToPeer(id: string){
-    const peer = new Peer();
+    peer = new Peer();
     
     peer.on('open', () => {
         const conn = peer.connect(id + "-filyPeer-VWdOKQrqGPEtCm7sdiWmZAbtK");
@@ -109,6 +117,11 @@ function connectToPeer(id: string){
                         saveArrayBuffer(fileData.buffer, data.fileName);
                         break;
             
+                    case "killStream":
+                        console.log('Stream killed');
+                        fileData = undefined; // Reset fileData
+                        break;
+                        
                     default:
                         console.warn('Unknown data type received:', data.type);
                         break;
@@ -125,18 +138,34 @@ function connectToPeer(id: string){
             });
 
         });
+
+        peer.on('error', function(err) {
+            stopSharing()
+            alert("Code invalid or error occured.");
+        });
     });    
 }
 
-function downloadableFileCallback(callback: Function, callback2: Function){
+
+function stopSharing(){
+    // Stop sharing
+    myEmitter.emit('kill');
+    peer.destroy();
+    setReceivingFile(false);
+}
+
+
+function downloadableFileCallback(callback: Function, callback2: Function, callback3: Function){
     sendableFile = callback
     setFileDownloadProgress = callback2
+    setReceivingFile = callback3
 }
 
 export {
     createPeer,
     connectToPeer,
-    downloadableFileCallback
+    downloadableFileCallback,
+    stopSharing
 }
 
 
