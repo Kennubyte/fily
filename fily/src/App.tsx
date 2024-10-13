@@ -1,6 +1,8 @@
 import Button from "@suid/material/Button";
 import { TextField } from "@suid/material";
 import { createSignal } from "solid-js";
+import { Box, LinearProgress } from "@suid/material";
+
 
 import './peerManager'
 import { connectToPeer, createPeer, downloadableFileCallback } from "./peerManager";
@@ -95,13 +97,17 @@ export default function App() {
           <Button variant="contained" disabled={!!shareCode()} type="submit">
             Connect
           </Button>
-          <span>{fileDownloadProgress()}%</span>
+          <Box sx={{ width: "100%" }}>
+            <LinearProgress variant="determinate" value={Number(fileDownloadProgress())} />
+          </Box>
         </form>
         <div>
           <Button variant="contained" on:click={handleFile}>
             Select File
           </Button>
-          <span>{fileLocalProgress()}%</span>
+          <Box sx={{ width: "100%" }}>
+            <LinearProgress variant="determinate" value={Number(fileLocalProgress())} />
+          </Box>
         </div>
       </div>
     </>
