@@ -72,9 +72,8 @@ function connectToPeer(id: string){
     peer.on('open', () => {
         const conn = peer.connect(id + "-filyPeer-VWdOKQrqGPEtCm7sdiWmZAbtK");
         conn.on('open', function() {
-            
             let fileData: Uint8Array | undefined; // Declare fileData with type
-
+            
             conn.on('data', function(data: { 
                 type: string; 
                 fileName: string; 
