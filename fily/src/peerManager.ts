@@ -81,6 +81,7 @@ function connectToPeer(id: string){
                 file: ArrayBuffer; 
                 offset: number; 
             }) {
+                console.log(data.type)
                 switch (data.type) {
 
                     case "responseFileData":
