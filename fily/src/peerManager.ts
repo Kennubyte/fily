@@ -67,7 +67,7 @@ function connectToPeer(id: string){
         const conn = peer.connect(id + "-filyPeer-VWdOKQrqGPEtCm7sdiWmZAbtK");
         conn.on('open', function() {
 
-            conn.on('error', function(err) {
+            conn.on('close', function() {
                 stopSharing()
                 alert("connection died");
             });
