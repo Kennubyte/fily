@@ -148,9 +148,9 @@ export default function App() {
             color="error"
             disabled={!!!shareCode() != receivingFile()}
             on:click={() => {
+              stopSharing();
               setShareCode("");
               setSendableFile(undefined);
-              stopSharing();
               setReceivingFile(false);
             }}
           >
