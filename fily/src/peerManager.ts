@@ -1,5 +1,6 @@
 import { Peer } from "peerjs";
 let sendableFile
+let setFileDownloadProgress
 
 function createPeer(id: string){
     const peer = new Peer(id + "-filyPeer-VWdOKQrqGPEtCm7sdiWmZAbtK");
@@ -88,6 +89,7 @@ function connectToPeer(id: string){
                         
                         const percentage = (data.offset / data.fileSize) * 100;
                         console.log(`Progress: ${percentage.toFixed(2)}%`);
+                        setFileDownloadProgress(percentage.toFixed(2))
             
                         // Check bounds before setting
                         const incomingData = new Uint8Array(data.file);
@@ -126,8 +128,9 @@ function connectToPeer(id: string){
     });    
 }
 
-function downloadableFileCallback(callback: Function){
+function downloadableFileCallback(callback: Function, callback2: Function){
     sendableFile = callback
+    setFileDownloadProgress = callback2
 }
 
 export {

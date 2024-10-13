@@ -8,36 +8,51 @@ import { connectToPeer, createPeer, downloadableFileCallback } from "./peerManag
 export default function App() {
   const [shareCode, setShareCode] = createSignal<string>("");
   const [sendableFile, setSendableFile] = createSignal<{ data: ArrayBuffer; fileName: string; fileSize: number }>();
-  downloadableFileCallback(sendableFile)
+  const [fileLocalProgress, setFileLocalProgress] = createSignal<string>("0");
+  const [fileDownloadProgress, setFileDownloadProgress] = createSignal<string>("0");
+  downloadableFileCallback(sendableFile, setFileDownloadProgress)
 
   function handleFile() {
     const input = document.createElement("input");
     input.type = "file";
-
+  
     input.onchange = (e) => {
       // getting a hold of the file reference
       const file = (e.target as HTMLInputElement).files[0];
-
+  
       // setting up the reader
       const reader = new FileReader();
+      
+      // Log progress
+      reader.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percentComplete = (event.loaded / event.total) * 100;
+          setFileLocalProgress(percentComplete.toFixed(2))
+        }
+      };
+  
       reader.readAsArrayBuffer(file);
-
+  
       reader.onload = (readerEvent) => {
         const content = readerEvent.target.result;
+        console.log("File read complete");
         console.log(content);
+        
         setSendableFile({
           data: content as ArrayBuffer,
           fileName: file.name,
           fileSize: file.size
-        })
+        });
+  
         const code = Math.random().toString().slice(2, 8);
         setShareCode(code);
         createPeer(code);
       };
     };
-
+  
     input.click();
   }
+  
 
   async function handleConnect(e: Event) {
     e.preventDefault();
@@ -80,11 +95,13 @@ export default function App() {
           <Button variant="contained" disabled={!!shareCode()} type="submit">
             Connect
           </Button>
+          <span>{fileDownloadProgress()}%</span>
         </form>
         <div>
           <Button variant="contained" on:click={handleFile}>
             Select File
           </Button>
+          <span>{fileLocalProgress()}%</span>
         </div>
       </div>
     </>
