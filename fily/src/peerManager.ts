@@ -16,8 +16,36 @@ function createPeer(id: string){
                     break;
 
                 case "requestFile":
-                    conn.send({ type: "responseFile", file: sendableFile().data });
+                    const fileData = sendableFile().data; // Assuming this is an ArrayBuffer or similar
+                    const fileName = sendableFile().fileName;
+                
+                    const chunkSize = 64 * 1024; // chunk size in bytes
+                    let offset = 0;
+                
+                    function sendNextChunk() {
+                        const chunk = fileData.slice(offset, offset + chunkSize);
+                        
+                        conn.send({
+                            type: "responseFile",
+                            file: chunk,
+                            fileSize: fileData.byteLength,
+                            fileName: fileName,
+                            offset: offset // Send the offset to track which chunk is being sent
+                        });
+                
+                        offset += chunkSize;
+                
+                        // Check if there's more data to send
+                        if (offset < fileData.byteLength) {
+                            setTimeout(sendNextChunk, 0);
+                        } else {
+                            conn.send({ type: "responseFileEnd", fileName: fileName });
+                        }
+                    }
+                
+                    sendNextChunk(); // Start sending chunks
                     break;
+                    
     
                 // Add more cases if needed
                 default:
