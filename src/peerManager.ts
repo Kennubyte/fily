@@ -1,4 +1,3 @@
-import { LinearProgress } from "@suid/material";
 import { Peer } from "peerjs";
 import toast from "solid-toast";
 let sendableFile
