@@ -1,4 +1,6 @@
+import { LinearProgress } from "@suid/material";
 import { Peer } from "peerjs";
+import toast from "solid-toast";
 let sendableFile
 let setFileDownloadProgress
 let setReceivingFile
@@ -11,18 +13,17 @@ function createPeer(id: string){
     peer.on('connection', function(conn) {  
         
         conn.on('data', function(data: { type: string; message: any }) {
-            console.log(data); // Log the incoming data
-    
+
             switch (data.type) {
                 case "requestFileData":
                     conn.send({ type: "responseFileData", fileName: sendableFile().fileName, fileSize: sendableFile().fileSize });
                     break;
 
                 case "requestFile":
-                    const fileData = sendableFile().data; // Assuming this is an ArrayBuffer or similar
+                    const fileData = sendableFile().data;
                     const fileName = sendableFile().fileName;
                 
-                    const chunkSize = 64 * 1024; // chunk size in bytes
+                    const chunkSize = 128 * 1024;
                     let offset = 0;
                 
                     function sendNextChunk() {
@@ -33,12 +34,11 @@ function createPeer(id: string){
                             file: chunk,
                             fileSize: fileData.byteLength,
                             fileName: fileName,
-                            offset: offset // Send the offset to track which chunk is being sent
+                            offset: offset
                         });
                 
                         offset += chunkSize;
                 
-                        // Check if there's more data to send
                         if (offset < fileData.byteLength) {
                             setTimeout(sendNextChunk, 0);
                         } else {
@@ -46,11 +46,10 @@ function createPeer(id: string){
                         }
                     }
                 
-                    sendNextChunk(); // Start sending chunks
+                    sendNextChunk();
                     break;
                     
     
-                // Add more cases if needed
                 default:
                     console.log('Unknown type:', data.type);
                     break;
@@ -65,14 +64,16 @@ function connectToPeer(id: string){
     
     peer.on('open', () => {
         const conn = peer.connect(id + "-filyPeer-VWdOKQrqGPEtCm7sdiWmZAbtK");
-        conn.on('open', function() {
+        
+        conn.once('open', function() {
+            toast.success("Connection to host successful");
 
-            conn.on('close', function() {
+            conn.once('close', function() {
                 stopSharing()
-                alert("connection died");
+                toast.error("Connection to host closed");
             });
             
-            let fileData: Uint8Array | undefined; // Declare fileData with type
+            let fileData: Uint8Array | undefined;
             
             conn.on('data', function(data: { 
                 type: string; 
@@ -86,21 +87,19 @@ function connectToPeer(id: string){
 
                     case "responseFileData":
                         console.log('File Data:', data.fileName, data.fileSize);
-                        // Initialize fileData with the correct size
                         fileData = new Uint8Array(data.fileSize);
                         break;
             
                     case "responseFile":
                         if (!fileData) {
                             console.error('fileData is not initialized!');
-                            return; // Exit if fileData isn't ready
+                            return;
                         }
                         
                         const percentage = (data.offset / data.fileSize) * 100;
                         console.log(`Progress: ${percentage.toFixed(2)}%`);
                         setFileDownloadProgress(percentage.toFixed(2))
             
-                        // Check bounds before setting
                         const incomingData = new Uint8Array(data.file);
                         if (data.offset + incomingData.length <= fileData.length) {
                             fileData.set(incomingData, data.offset);
@@ -112,10 +111,12 @@ function connectToPeer(id: string){
                     case "responseFileEnd":
                         if (!fileData) {
                             console.error('fileData is not initialized!');
-                            return; // Exit if fileData isn't ready
+                            return;
                         }
                         console.log('File Received:', data.fileName);
                         saveArrayBuffer(fileData.buffer, data.fileName);
+                        toast.success("File downloaded successfully");
+                        stopSharing()
                         break;
             
 
@@ -129,7 +130,7 @@ function connectToPeer(id: string){
             conn.send({
                 type: 'requestFileData',
             });
-
+            
             conn.send({
                 type: 'requestFile',
             });
@@ -138,14 +139,14 @@ function connectToPeer(id: string){
 
         peer.on('error', function(err) {
             stopSharing()
-            alert("Code invalid or error occured.");
+            toast.error("" + err);
         });
     });    
 }
 
 
 function stopSharing(){
-    // Stop sharing
+
     peer.destroy();
     setReceivingFile(false);
 }

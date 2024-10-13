@@ -2,5 +2,13 @@
 import { render } from "solid-js/web";
 import App from "./App";
 import "./index.css"
+import { Toaster } from "solid-toast";
 
-render(() => <App />, document.getElementById("root")!);
+render(() => 
+<>
+    <Toaster
+    gutter={8}
+    />
+    <App />
+</>
+, document.getElementById("root")!);

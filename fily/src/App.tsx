@@ -1,6 +1,6 @@
 import Button from "@suid/material/Button";
 import { TextField } from "@suid/material";
-import { createSignal } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 
 import { 
   LinearProgress,
@@ -9,6 +9,7 @@ import {
 
 import './peerManager'
 import { connectToPeer, createPeer, downloadableFileCallback, stopSharing } from "./peerManager";
+import toast from "solid-toast";
 
 export default function App() {
   const [shareCode, setShareCode] = createSignal<string>("");
@@ -21,27 +22,55 @@ export default function App() {
   function handleFile() {
     const input = document.createElement("input");
     input.type = "file";
+    setShareCode("XXXXXX");
   
     input.onchange = (e) => {
-      // getting a hold of the file reference
       const file = (e.target as HTMLInputElement).files[0];
   
-      // setting up the reader
       const reader = new FileReader();
       
-      // Log progress
       reader.onprogress = (event) => {
         if (event.lengthComputable) {
           const percentComplete = (event.loaded / event.total) * 100;
           setFileLocalProgress(percentComplete.toFixed(2))
         }
       };
-  
+
+
+      toast.custom((t) => {
+        const progress = Number(fileLocalProgress());
+      
+        // Check if progress is 100 and dismiss the toast
+        if (progress === 100) {
+          toast.dismiss(t.id); // Dismiss the toast
+        }
+      
+        return (
+          <div class="px-6 py-3 pr-12 bg-white shadow-md font-medium relative">
+            Reading file to memory...
+            <LinearProgress variant="determinate" value={progress} />
+            <button
+              class="bg-gray-200/80 hover:bg-gray-300 flex justify-center top-1/2 -translate-y-1/2 items-center w-6 h-6 right-2.5 absolute"
+              onClick={() => {
+                toast.dismiss(t.id);
+              }}
+            >
+              &times;
+            </button>
+          </div>
+        );
+      }, {
+        duration: 99999999999999, 
+        unmountDelay: 0
+      });
+      
+      
       reader.readAsArrayBuffer(file);
   
       reader.onload = (readerEvent) => {
         const content = readerEvent.target.result;
         console.log("File read complete");
+        toast.success("File read complete");
         console.log(content);
         
         setSendableFile({
@@ -66,32 +95,19 @@ export default function App() {
     const code = [...data.entries()][0][1] as unknown as string;
 
     if (!code.match(/^\d+$/)) {
-      alert("Code must be a number");
+      toast('The code must be a number')
       setReceivingFile(false);
       return;
     }
 
     if (code.length !== 6) {
-      alert("Code must be 6 digits");
+      toast('The code must be 6 digits')
       setReceivingFile(false);
       return;
     }
 
     connectToPeer(code);
     setReceivingFile(true);
-
-    /*     
-    console.log("Connecting to", code);
-    const response = await fetch(`http://localhost:8080/api/getResourceByCode/${code}`);
-    if (!response.ok) {
-      alert("Resource not found");
-      return;
-    }
-
-    const responseInfo = await response.text();
-    console.log(responseInfo)
-    */
-
 
   }
 
@@ -108,43 +124,45 @@ export default function App() {
                 disabled={!!shareCode() || receivingFile()}
                 type="number"
                 name="connectionCode"
-                class="flex-1 h-12" // This sets the height and makes it grow
+                class="flex-1 h-12"
               />
               <Button
                 variant="contained"
                 disabled={!!shareCode() || receivingFile()}
                 type="submit"
-                class="h-12 w-full" // Ensure same height
-              >
-                Connect
+                class="h-12 w-full"
+                >
+                Connect {receivingFile() ? fileDownloadProgress() + "%" : ""}
               </Button>
             </form>
   
+            <div class="h-[250px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent via-neutral-500 to-transparent opacity-25 dark:via-neutral-400"></div>
+
             <div class="grid flex-1 gap-5">
               <TextField
-                  label="Sharing Code"
+                  label="Your Code"
                   type="number"
                   value={shareCode()}
                   disabled={receivingFile()}
                   InputProps={{
                     readOnly: true,
                   }}
-                  class="flex-1 h-12" // This sets the height and makes it grow
+                  class="flex-1 h-12"
                 />
               <Button 
                 variant="contained" 
                 onClick={handleFile}
                 disabled={!!shareCode() || receivingFile()}
-                class="h-12 w-full" // Ensuring the height matches
+                class="h-12 w-full"
               >
-                Select File
+                Select File {!!shareCode() || receivingFile() ? fileLocalProgress() + "%" : ""}
               </Button>
             </div>
           </div>
   
           <Button 
             variant="contained" 
-            class="h-12 w-full" // Ensuring the height matches
+            class="h-12 w-full"
             color="error"
             disabled={!!!shareCode() != receivingFile()}
             on:click={() => {
@@ -154,26 +172,10 @@ export default function App() {
               setReceivingFile(false);
             }}
           >
-            Stop Sharing
+            Stop
           </Button>
         </div>
       </div>
     </div>
   );
-  
-  
-  
 }
-
-{/* <form onSubmit={handleConnect} class="gap-3 gap">
-<TextField label="Enter Code" disabled={!!shareCode()} type="number" name="connectionCode" />
-<Button variant="contained" disabled={!!shareCode()} type="submit">
-  Connect
-</Button>
-</form>
-<div>
-<span>Your Code is: {shareCode()}</span>
-<Button variant="contained" on:click={handleFile}>
-  Select File
-</Button>
-</div> */}
