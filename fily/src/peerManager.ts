@@ -14,8 +14,15 @@ function createPeer(id: string){
     });
     peer.on('connection', function(conn) {
         myEmitter.on('kill', () => {
-            conn.send({ type: "killStream" });
-        });
+            if (conn && conn.open) {
+                console.log("Killing stream");
+                conn.send({ type: "killStream" });
+                console.log(conn.open)
+            } else {
+                console.warn("Connection is not open or already closed, cannot send killStream");
+            }
+        });        
+        
         conn.on('data', function(data: { type: string; message: any }) {
             console.log(data); // Log the incoming data
     
@@ -82,6 +89,12 @@ function connectToPeer(id: string){
                 offset: number; 
             }) {
                 switch (data.type) {
+                    
+                    case "killStream":
+                        console.log('Stream killed');
+                        fileData = undefined; // Reset fileData
+                        break;
+
                     case "responseFileData":
                         console.log('File Data:', data.fileName, data.fileSize);
                         // Initialize fileData with the correct size
@@ -116,11 +129,7 @@ function connectToPeer(id: string){
                         saveArrayBuffer(fileData.buffer, data.fileName);
                         break;
             
-                    case "killStream":
-                        console.log('Stream killed');
-                        fileData = undefined; // Reset fileData
-                        break;
-                        
+
                     default:
                         console.warn('Unknown data type received:', data.type);
                         break;
