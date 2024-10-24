@@ -4,8 +4,28 @@ let sendableFile
 let setFileDownloadProgress
 let setReceivingFile
 let peer: Peer;
-function createPeer(id: string){
-    peer = new Peer(id + "-filyPeer-VWdOKQrqGPEtCm7sdiWmZAbtK");
+async function createPeer(id: string){
+    const iceServersConfig = await getIceServers();
+
+    if (!iceServersConfig) {
+        console.error('No ICE servers available, cannot create Peer.');
+        return;
+    }
+
+    const peerOptions = {
+        config: {
+            iceServers: [
+                {
+                    urls: iceServersConfig.iceServers.urls,
+                    username: iceServersConfig.iceServers.username,
+                    credential: iceServersConfig.iceServers.credential
+                }
+            ]
+        }
+    };
+
+
+    peer = new Peer(id + "-filyPeer-VWdOKQrqGPEtCm7sdiWmZAbtK", peerOptions);
     peer.on('open', function(id) {
         console.log('My peer ID is: ' + id);
     });
@@ -58,8 +78,49 @@ function createPeer(id: string){
     
 }
 
-function connectToPeer(id: string){
-    peer = new Peer();
+
+async function getIceServers() {
+    try {
+        const response = await fetch('https://fily-credential-manager.kennubyte.workers.dev/');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const returnData = await response.json();
+        return returnData;
+        
+    } catch (error) {
+        console.error('Failed to fetch ICE servers:', error);
+        return null;
+    }
+}
+
+
+
+
+async function connectToPeer(id: string){
+    const iceServersConfig = await getIceServers();
+
+    if (!iceServersConfig) {
+        console.error('No ICE servers available, cannot create Peer.');
+        return;
+    }
+
+    const peerOptions = {
+        config: {
+            iceServers: [
+                {
+                    urls: iceServersConfig.iceServers.urls,
+                    username: iceServersConfig.iceServers.username,
+                    credential: iceServersConfig.iceServers.credential
+                }
+            ]
+        }
+    };
+
+
+    peer = new Peer(peerOptions);
     
     peer.on('open', () => {
         const conn = peer.connect(id + "-filyPeer-VWdOKQrqGPEtCm7sdiWmZAbtK");
