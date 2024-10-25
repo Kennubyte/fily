@@ -132,7 +132,7 @@ export default function App() {
                 type="submit"
                 class="h-12 w-full"
                 >
-                Connect {receivingFile() ? fileDownloadProgress() + "%" : ""}
+                Download {receivingFile() ? fileDownloadProgress() + "%" : ""}
               </Button>
             </form>
   
