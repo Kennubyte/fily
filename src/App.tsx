@@ -111,13 +111,15 @@ export default function App() {
 
   }
 
+  const [isModalOpen, setIsModalOpen] = createSignal(false);
+
   return (
-    <div class="flex h-screen items-center justify-center">
-      <div class="card bg-stone-400 p-10 shadow-2xl rounded-lg max-w-2xl">
+    <div class="flex h-screen items-center justify-center p-4">
+      <div class="card bg-stone-400 p-6 shadow-2xl rounded-lg w-full max-w-2xl">
         <div class="card-body">
           <h2 class="card-title text-3xl mb-10 justify-center flex">Fily</h2>
   
-          <div class="flex gap-x-10 mb-5">
+          <div class="flex flex-col md:flex-row gap-10 mb-5">
             <form onSubmit={handleConnect} class="grid gap-5 flex-1">
               <TextField
                 label="Enter Code"
@@ -136,7 +138,7 @@ export default function App() {
               </Button>
             </form>
   
-            <div class="h-[250px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent via-neutral-500 to-transparent opacity-25 dark:via-neutral-400" />
+            <div class="hidden md:block h-[250px] min-h-[1em] w-px self-stretch bg-gradient-to-tr from-transparent via-neutral-500 to-transparent opacity-25 dark:via-neutral-400" />
 
             <div class="grid flex-1 gap-5">
               <TextField
@@ -175,8 +177,38 @@ export default function App() {
           >
             Stop
           </Button>
+
         </div>
+          <Button 
+              variant="text" 
+              class="mt-4 w-full h-12"
+              onClick={() => setIsModalOpen(true)}
+            >
+            How to Use?
+          </Button>
       </div>
+
+      {isModalOpen() && (
+        <div class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+          <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative">
+            <h2 class="text-2xl mb-4">How to Use Fily</h2>
+            <p class="mb-4">
+              To share a file, click on "Select File" and choose the file you want to share. A code will be generated which you can share with others.
+            </p>
+            <p class="mb-4">
+              To download a file, enter the code provided by the sender and click "Download".
+            </p>
+            <Button 
+              variant="contained" 
+              class="h-12 w-full"
+              onClick={() => setIsModalOpen(false)}
+            >
+              Close
+            </Button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
