@@ -113,7 +113,7 @@ export default function App() {
 
   return (
     <div class="flex h-screen items-center justify-center">
-      <div class="card bg-gray-200 p-10 shadow-2xl rounded-lg max-w-2xl">
+      <div class="card bg-stone-400 p-10 shadow-2xl rounded-lg max-w-2xl">
         <div class="card-body">
           <h2 class="card-title text-3xl mb-10 justify-center flex">Fily</h2>
   
@@ -146,6 +146,7 @@ export default function App() {
                   disabled={receivingFile()}
                   InputProps={{
                     readOnly: true,
+                    
                   }}
                   class="flex-1 h-12"
                 />
