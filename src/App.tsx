@@ -115,7 +115,7 @@ export default function App() {
 
   return (
     <div class="flex h-screen items-center justify-center p-4">
-      <div class="card bg-stone-400 p-6 shadow-2xl rounded-lg w-full max-w-2xl">
+      <div class="card p-6 shadow-2xl rounded-lg w-full max-w-2xl">
         <div class="card-body">
           <h2 class="card-title text-3xl mb-10 justify-center flex">Fily</h2>
   
