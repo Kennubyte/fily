@@ -1,6 +1,6 @@
 import Button from "@suid/material/Button";
 import { TextField } from "@suid/material";
-import { createEffect, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 
 import { 
   LinearProgress,
