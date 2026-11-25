@@ -2,7 +2,8 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "strict": false,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "jsx": "preserve",
@@ -12,5 +13,6 @@
     ],
     "noEmit": true,
     "isolatedModules": true
-  }
+  },
+  "include": ["src", "vite.config.ts"]
 }
