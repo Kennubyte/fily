@@ -1,9 +1,17 @@
 import { defineConfig } from "vite";
-import suidPlugin from "@suid/vite-plugin";
 import solidPlugin from "vite-plugin-solid";
 
+// Keep SUID packages out of dependency pre-bundling, as the SUID plugin did.
+const suidPackages = [
+  "@suid/base", "@suid/codemod", "@suid/css", "@suid/icons-material",
+  "@suid/material", "@suid/styled-engine", "@suid/system", "@suid/types",
+  "@suid/utils",
+];
+
 export default defineConfig({
-  plugins: [suidPlugin(), solidPlugin()],
+  plugins: [solidPlugin()],
+  optimizeDeps: { exclude: suidPackages },
+  ssr: { noExternal: suidPackages },
   build: {
     target: "esnext",
   },

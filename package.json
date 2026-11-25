@@ -16,13 +16,12 @@
     "solid-toast": "^0.5.0"
   },
   "devDependencies": {
-    "@suid/vite-plugin": "*",
     "@tailwindcss/postcss": "^4.3.5",
     "@types/simple-peer": "^9.11.9",
     "postcss": "^8.5.33",
     "tailwindcss": "^4.3.5",
     "typescript": "^7.0.2",
-    "vite": "*",
+    "vite": "^8.3.8",
     "vite-plugin-solid": "*"
   }
 }
