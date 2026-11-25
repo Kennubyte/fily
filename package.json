@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "build": "vite build",
-    "typecheck": "tsc --noEmit",
-    "start": "vite"
+    "start": "vite",
+    "test:css": "node tests/tailwind-build.cjs",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@suid/icons-material": "*",
@@ -16,10 +17,10 @@
   },
   "devDependencies": {
     "@suid/vite-plugin": "*",
+    "@tailwindcss/postcss": "^4.3.5",
     "@types/simple-peer": "^9.11.9",
-    "autoprefixer": "^10.6.2",
     "postcss": "^8.5.33",
-    "tailwindcss": "^3.4.13",
+    "tailwindcss": "^4.3.5",
     "typescript": "^7.0.2",
     "vite": "*",
     "vite-plugin-solid": "*"
