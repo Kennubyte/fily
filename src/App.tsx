@@ -189,7 +189,7 @@ export default function App() {
       </div>
 
       {isModalOpen() && (
-        <div class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative">
             <h2 class="text-2xl mb-4">How to Use Fily</h2>
             <p class="mb-4">
