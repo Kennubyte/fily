@@ -1,10 +1,7 @@
 import Button from "@suid/material/Button";
-import { TextField } from "@suid/material";
+import TextField from "@suid/material/TextField";
+import LinearProgress from "@suid/material/LinearProgress";
 import { createSignal } from "solid-js";
-
-import { 
-  LinearProgress,
-} from "@suid/material"
 
 
 import './peerManager'
