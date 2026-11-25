@@ -133,7 +133,7 @@ async function connectToPeer(id: string){
                 toast.error("Connection to host closed");
             });
             
-            let fileData: Uint8Array | undefined;
+            let fileData: Uint8Array<ArrayBuffer> | undefined;
             
             conn.on('data', function(data: { 
                 type: string; 
