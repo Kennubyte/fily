@@ -187,7 +187,7 @@ export default function App() {
 
       {isModalOpen() && (
         <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative">
+          <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative mx-4 max-h-[90vh] overflow-y-auto">
             <h2 class="text-2xl mb-4">How to Use Fily</h2>
             <p class="mb-4">
               To share a file, click on "Select File" and choose the file you want to share. A code will be generated which you can share with others.
@@ -195,6 +195,14 @@ export default function App() {
             <p class="mb-4">
               To download a file, enter the code provided by the sender and click "Download".
             </p>
+            <div class="mb-5 border-t border-stone-200 pt-4">
+              <h3 class="font-medium mb-2">Prefer the command line?</h3>
+              <p class="text-sm text-stone-600 mb-2">Install Fily CLI on Linux x86_64:</p>
+              <pre class="bg-stone-100 rounded p-3 text-xs overflow-x-auto"><code>curl -fsSL https://raw.githubusercontent.com/Kennubyte/fily-cli/main/install.sh | sh</code></pre>
+              <p class="text-sm text-stone-600 mt-2">
+                Windows downloads and more details are on the <a class="underline hover:text-stone-900" href="https://github.com/Kennubyte/fily-cli">Fily CLI GitHub page</a>.
+              </p>
+            </div>
             <Button 
               variant="contained" 
               class="h-12 w-full"
